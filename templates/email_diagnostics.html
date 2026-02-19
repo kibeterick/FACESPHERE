@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Email Diagnostics - AKIRA</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
+        h1 { color: #333; }
+        .status { padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        .test-result { margin: 20px 0; padding: 15px; background: #f8f9fa; border-left: 4px solid #007bff; }
+        pre { background: #f4f4f4; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📧 Email System Diagnostics</h1>
+        
+        <div id="config-status"></div>
+        
+        <h2>Quick Tests</h2>
+        <button onclick="testConfig()">1. Check Configuration</button>
+        <button onclick="testSMTP()">2. Test SMTP Connection</button>
+        <button onclick="sendTestEmail()">3. Send Test Email</button>
+        
+        <div id="test-results"></div>
+        
+        <h2>Solutions</h2>
+        <div class="info status">
+            <strong>If emails aren't being received:</strong><br>
+            1. Check firewall settings (Windows Defender)<br>
+            2. Try port 465 instead of 587<br>
+            3. Use Gmail API (no SMTP needed)<br>
+            4. Read: EMAIL_SENDING_SOLUTIONS.md
+        </div>
+    </div>
+    
+    <script>
+        async function testConfig() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = '<div class="test-result">🔄 Checking configuration...</div>';
+            
+            try {
+                const response = await fetch('/api/email/statistics');
+                const data = await response.json();
+                
+                results.innerHTML = `
+                    <div class="test-result">
+                        <h3>✅ Configuration Check</h3>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                results.innerHTML = `
+                    <div class="test-result error">
+                        <h3>❌ Configuration Error</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        async function testSMTP() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = '<div class="test-result">🔄 Testing SMTP connection...</div>';
+            
+            // This will attempt to send to a test address
+            const testData = {
+                to_email: 'test@example.com',
+                subject: 'SMTP Test',
+                body: 'Testing SMTP connection'
+            };
+            
+            try {
+                const response = await fetch('/api/email/send', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(testData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    results.innerHTML = `
+                        <div class="test-result success">
+                            <h3>✅ SMTP Working!</h3>
+                            <p>${data.message}</p>
+                            <p>Port: ${data.port || 'unknown'}</p>
+                        </div>
+                    `;
+                } else {
+                    results.innerHTML = `
+                        <div class="test-result error">
+                            <h3>❌ SMTP Failed</h3>
+                            <p><strong>Error:</strong> ${data.message}</p>
+                            <p><strong>Type:</strong> ${data.error_type}</p>
+                            ${data.solution ? `<p><strong>Solution:</strong> ${data.solution}</p>` : ''}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                results.innerHTML = `
+                    <div class="test-result error">
+                        <h3>❌ Test Failed</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        async function sendTestEmail() {
+            const email = prompt('Enter your email address to receive test email:');
+            if (!email) return;
+            
+            const results = document.getElementById('test-results');
+            results.innerHTML = '<div class="test-result">📤 Sending test email...</div>';
+            
+            const testData = {
+                to_email: email,
+                subject: 'Test Email from AKIRA AI System',
+                body: 'This is a test email. If you receive this, email sending is working correctly!'
+            };
+            
+            try {
+                const response = await fetch('/api/email/send', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(testData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    results.innerHTML = `
+                        <div class="test-result success">
+                            <h3>✅ Email Sent!</h3>
+                            <p>${data.message}</p>
+                            <p>Check your inbox: ${email}</p>
+                            <p>Also check Spam folder</p>
+                        </div>
+                    `;
+                } else {
+                    results.innerHTML = `
+                        <div class="test-result error">
+                            <h3>❌ Email Failed</h3>
+                            <p><strong>Error:</strong> ${data.message}</p>
+                            <p><strong>Type:</strong> ${data.error_type}</p>
+                            ${data.solution ? `<p><strong>Solution:</strong> ${data.solution}</p>` : ''}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                results.innerHTML = `
+                    <div class="test-result error">
+                        <h3>❌ Send Failed</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Check config on load
+        window.onload = testConfig;
+    </script>
+</body>
+</html>

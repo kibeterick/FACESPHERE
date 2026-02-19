@@ -124,6 +124,11 @@ def email_page():
     """Email Management page"""
     return render_template('email.html')
 
+@app.route('/email/diagnostics')
+def email_diagnostics_page():
+    """Email Diagnostics page"""
+    return render_template('email_diagnostics.html')
+
 @app.route('/video-calls')
 def video_calls_page():
     """Video Calls page"""
