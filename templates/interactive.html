@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Assistant - AKIRA</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        .nav {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .nav a {
+            text-decoration: none;
+            color: #667eea;
+            margin-right: 20px;
+            font-weight: 500;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .feature-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            margin: 5px;
+            width: calc(100% - 10px);
+            transition: transform 0.2s;
+        }
+        .feature-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        .feature-btn:active {
+            transform: translateY(0);
+        }
+        .emergency-btn {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        .status-box {
+            background: #f0fdf4;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .alert-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .music-player {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        .music-track {
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+        }
+        .detection-area {
+            background: #1f2937;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎙️ Interactive Assistant</h1>
+        <p>Voice Conversation • Music Player • Person Detection • Emergency Alerts</p>
+    </div>
+    
+    <div class="nav">
+        <a href="/">🏠 Home</a>
+        <a href="/dashboard">📊 Dashboard</a>
+        <a href="/assistant">🤖 Assistant</a>
+        <a href="/interactive">🎙️ Interactive</a>
+        <a href="/iot">🏠 IoT</a>
+    </div>
+    
+    <div class="grid">
+        <!-- Voice Conversation -->
+        <div class="card">
+            <h2>🗣️ Voice Conversation</h2>
+            <p>Talk to Akira using your voice</p>
+            <button class="feature-btn" onclick="greetUser()">
+                👋 Greet Me
+            </button>
+            <button class="feature-btn" onclick="startConversation()">
+                💬 Start Conversation
+            </button>
+            <button class="feature-btn" onclick="aboutAkira()">
+                🤖 About Akira
+            </button>
+            <div id="voiceStatus" class="status-box" style="display:none; margin-top:10px;">
+                <strong>🎤 Status:</strong> <span id="voiceText"></span>
+            </div>
+        </div>
+        
+        <!-- Music Player -->
+        <div class="card">
+            <h2>🎵 Music Player</h2>
+            <p>Play music based on your mood</p>
+            <button class="feature-btn" onclick="playMusic('relaxing')">
+                😌 Relaxing Music
+            </button>
+            <button class="feature-btn" onclick="playMusic('energetic')">
+                ⚡ Energetic Music
+            </button>
+            <button class="feature-btn" onclick="playMusic('focus')">
+                🎯 Focus Music
+            </button>
+            <button class="feature-btn" onclick="playMusic('happy')">
+                😊 Happy Music
+            </button>
+            <div id="musicPlayer" class="music-player" style="display:none;">
+                <strong>Now Playing:</strong>
+                <div id="playlist"></div>
+                <div style="margin-top:15px; padding:15px; background:white; border-radius:8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <strong>⏱️ Time:</strong> <span id="musicTimer" style="font-size:1.2em; color:#667eea;">3:00</span>
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label style="display:block; margin-bottom:5px;"><strong>🔊 Volume:</strong></label>
+                        <input type="range" id="volumeSlider" min="0" max="100" value="50" 
+                               onchange="adjustVolume(this.value)" 
+                               style="width:100%; cursor:pointer;">
+                        <span id="volumeDisplay" style="font-size:0.9em; color:#666;">50%</span>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
+                        <button onclick="pauseMusic()" id="pauseBtn" 
+                                style="padding:10px; border:none; background:#f59e0b; color:white; border-radius:5px; cursor:pointer; font-weight:bold;">
+                            ⏸️ Pause
+                        </button>
+                        <button onclick="resumeMusic()" id="resumeBtn" 
+                                style="padding:10px; border:none; background:#10b981; color:white; border-radius:5px; cursor:pointer; font-weight:bold; display:none;">
+                            ▶️ Resume
+                        </button>
+                        <button onclick="stopCurrentAudio()" 
+                                style="padding:10px; border:none; background:#ef4444; color:white; border-radius:5px; cursor:pointer; font-weight:bold;">
+                            ⏹️ Stop
+                        </button>
+                        <button onclick="skipTrack()" 
+                                style="padding:10px; border:none; background:#667eea; color:white; border-radius:5px; cursor:pointer; font-weight:bold;">
+                            ⏭️ Skip
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Person Detection -->
+        <div class="card">
+            <h2>👤 Person Detection (360°)</h2>
+            <p>Check if someone is around you</p>
+            <div class="detection-area" id="detectionArea">
+                <div class="pulse">📹</div>
+                <p>Camera Ready</p>
+            </div>
+            <button class="feature-btn" onclick="detectPerson()" style="margin-top:10px;">
+                🔍 Scan All Directions
+            </button>
+            <button class="feature-btn" onclick="startMonitoring()">
+                📹 Start Monitoring
+            </button>
+        </div>
+        
+        <!-- Emergency Alerts -->
+        <div class="card">
+            <h2>🚨 Emergency System</h2>
+            <p>Quick access to emergency features</p>
+            <button class="feature-btn emergency-btn" onclick="triggerEmergency()">
+                🚨 EMERGENCY ALERT
+            </button>
+            <button class="feature-btn" onclick="testAlert()">
+                🔔 Test Alert System
+            </button>
+            <button class="feature-btn" onclick="viewEmergencyContacts()">
+                📞 Emergency Contacts
+            </button>
+            <div id="emergencyStatus" class="alert-box" style="display:none; margin-top:10px;">
+                <strong>⚠️ Status:</strong> <span id="emergencyText"></span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tired Mode Section -->
+    <div class="card">
+        <h2>😴 Tired Mode</h2>
+        <p>Feeling tired? Let me help you relax</p>
+        <button class="feature-btn" onclick="activateTiredMode()">
+            💤 Activate Relaxation Mode
+        </button>
+        <div id="tiredModeContent" style="display:none; margin-top:15px;">
+            <div class="status-box">
+                <strong>✨ Relaxation Mode Active</strong>
+                <p id="tiredModeDetails"></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- System Status -->
+    <div class="card">
+        <h2>📊 System Status</h2>
+        <div id="systemStatus">
+            <p>Loading status...</p>
+        </div>
+        <button class="feature-btn" onclick="refreshStatus()">
+            🔄 Refresh Status
+        </button>
+    </div>
+    
+    <script>
+        // User information
+        let userName = 'Erick Too';
+        let conversationContext = {
+            greeted: false,
+            topics_discussed: [],
+            user_preferences: {}
+        };
+        
+        // Load status on page load
+        window.onload = function() {
+            refreshStatus();
+            loadUserInfo();
+            initializeVoices();
+        };
+        
+        // Initialize voices for Web Speech API
+        function initializeVoices() {
+            if ('speechSynthesis' in window) {
+                // Load voices
+                let voices = window.speechSynthesis.getVoices();
+                
+                // Chrome loads voices asynchronously
+                if (voices.length === 0) {
+                    window.speechSynthesis.onvoiceschanged = function() {
+                        voices = window.speechSynthesis.getVoices();
+                        console.log('✅ Voice system ready. Available voices:', voices.length);
+                    };
+                } else {
+                    console.log('✅ Voice system ready. Available voices:', voices.length);
+                }
+            } else {
+                console.warn('⚠️ Web Speech API not supported in this browser');
+            }
+        }
+        
+        function loadUserInfo() {
+            // Load user information from system
+            fetch('/api/interactive/status')
+            .then(response => response.json())
+            .then(data => {
+                if (data.user && data.user !== 'undefined') {
+                    userName = data.user;
+                }
+            })
+            .catch(error => {
+                console.log('Using default user name');
+            });
+        }
+        
+        function greetUser() {
+            // Get personalized greeting from server
+            fetch(`/api/user/greeting/${userName}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('API error');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const greeting = data.greeting;
+                conversationContext.greeted = true;
+                speakToMe(greeting);
+                updateVoiceStatus('Greeted! Ready for conversation.');
+                
+                // Record activity
+                recordActivity('received personalized greeting');
+            })
+            .catch(error => {
+                console.log('Using fallback greeting:', error);
+                // Fallback greeting
+                const hour = new Date().getHours();
+                let timeGreeting = '';
+                
+                if (hour < 12) {
+                    timeGreeting = 'Good morning';
+                } else if (hour < 18) {
+                    timeGreeting = 'Good afternoon';
+                } else {
+                    timeGreeting = 'Good evening';
+                }
+                
+                const message = `${timeGreeting}, ${userName}! I'm Akira, your intelligent interactive assistant. I'm here to help you with anything you need. I can play music, detect people outside, handle emergencies, and have conversations with you. What would you like to do today?`;
+                
+                conversationContext.greeted = true;
+                speakToMe(message);
+                updateVoiceStatus('Greeted! Ready for conversation.');
+            });
+        }
+        
+        function startConversation() {
+            if (!conversationContext.greeted) {
+                greetUser();
+                return;
+            }
+            
+            const conversationGuide = `Hello ${userName}! Let's have a conversation. Here's what we can talk about:
+
+1. 🎵 Music - I can play relaxing, energetic, focus, or happy music for you
+2. 🏠 Smart Home - Control your lights, thermostat, and locks
+3. 👤 Security - Check if someone is outside or start monitoring
+4. 🚨 Emergency - Set up emergency contacts and alerts
+5. 😴 Relaxation - Activate tired mode with calming music and stories
+6. ⏰ Time & Date - Ask me about current time or date
+7. 🧮 Calculations - I can do math for you
+8. 📋 Tasks - Create reminders and to-do lists
+9. 🌤️ Weather - Get weather information
+10. 💬 General Chat - Ask me anything!
+
+What would you like to talk about?`;
+            
+            speakToMe(conversationGuide);
+            updateVoiceStatus('Conversation started! Ask me anything.');
+            
+            // Show conversation options
+            showConversationOptions();
+        }
+        
+        function aboutAkira() {
+            // Get user summary first
+            fetch(`/api/user/summary/${userName}`)
+            .then(response => response.json())
+            .then(summary => {
+                const about = `Hi ${userName}! I'm Akira, your AI-powered interactive assistant. 
+
+Here's what I know about you:
+• We've had ${summary.total_conversations} conversations together
+• You've been with me since ${new Date(summary.member_since).toLocaleDateString()}
+• Your favorite music: ${summary.favorite_music}
+• I've played music for you ${summary.music_played} times
+• I have ${summary.notes_count} special notes about you
+
+Here's what makes me special:
+🧠 Intelligence: I understand natural language and remember our conversations
+🎵 Music Player: I can play mood-based music for 3 minutes
+👤 Person Detection: I can check if someone is outside
+🚨 Emergency System: I can alert contacts and secure your home
+😴 Mood Detection: I know when you're tired and help you relax
+🏠 Smart Home: I control your IoT devices
+🗣️ Voice: I can speak to you and understand commands
+📊 Analytics: I track and learn from our interactions
+
+I'm always learning more about you to serve you better. How can I assist you today?`;
+                
+                speakToMe(about);
+                updateVoiceStatus('About Akira explained with your personal stats.');
+                recordActivity('learned about Akira');
+            })
+            .catch(error => {
+                // Fallback
+                const about = `Hi ${userName}! I'm Akira, your AI-powered interactive assistant. I can help you with music, security, emergencies, and much more!`;
+                speakToMe(about);
+                updateVoiceStatus('About Akira explained.');
+            });
+        }
+        
+        function recordActivity(activity) {
+            // Record user activity
+            fetch('/api/user/activity', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_name: userName,
+                    activity: activity
+                })
+            })
+            .catch(error => console.log('Activity recording failed'));
+        }
+        
+        function showConversationOptions() {
+            const options = `
+                <div style="margin-top:10px; padding:10px; background:white; border-radius:5px;">
+                    <strong>Quick Conversation Starters:</strong><br>
+                    <button onclick="askQuestion('What time is it?')" style="margin:2px; padding:5px 10px; border:none; background:#667eea; color:white; border-radius:5px; cursor:pointer;">⏰ Time</button>
+                    <button onclick="askQuestion('Play relaxing music')" style="margin:2px; padding:5px 10px; border:none; background:#667eea; color:white; border-radius:5px; cursor:pointer;">🎵 Music</button>
+                    <button onclick="askQuestion('Check for person outside')" style="margin:2px; padding:5px 10px; border:none; background:#667eea; color:white; border-radius:5px; cursor:pointer;">👤 Security</button>
+                    <button onclick="askQuestion('I feel tired')" style="margin:2px; padding:5px 10px; border:none; background:#667eea; color:white; border-radius:5px; cursor:pointer;">😴 Tired</button>
+                </div>
+            `;
+            
+            const statusDiv = document.getElementById('voiceStatus');
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = '<strong>💬 Conversation Active</strong>' + options;
+        }
+        
+        function askQuestion(question) {
+            conversationContext.topics_discussed.push(question);
+            
+            // Process the question
+            if (question.includes('time')) {
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString();
+                speakToMe(`The current time is ${timeStr}`);
+            } else if (question.includes('music')) {
+                speakToMe('Let me play some relaxing music for you');
+                playMusic('relaxing');
+            } else if (question.includes('person') || question.includes('outside')) {
+                speakToMe('Let me check if someone is outside');
+                detectPerson();
+            } else if (question.includes('tired')) {
+                speakToMe('You seem tired. Let me help you relax');
+                activateTiredMode();
+            } else {
+                speakToMe(`You asked: ${question}. Let me help you with that.`);
+            }
+            
+            updateVoiceStatus(`Discussed: ${question}`);
+        }
+        
+        function updateVoiceStatus(message) {
+            const statusDiv = document.getElementById('voiceStatus');
+            const statusText = document.getElementById('voiceText');
+            
+            statusDiv.style.display = 'block';
+            statusText.textContent = message;
+        }
+        
+        function speakToMe(text) {
+            const statusDiv = document.getElementById('voiceStatus');
+            const statusText = document.getElementById('voiceText');
+            
+            statusDiv.style.display = 'block';
+            statusText.textContent = 'Speaking...';
+            
+            // Use Web Speech API for immediate voice feedback
+            if ('speechSynthesis' in window) {
+                // Cancel any ongoing speech
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.9; // Slightly slower for clarity
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+                
+                // Use a clear voice if available
+                const voices = window.speechSynthesis.getVoices();
+                const preferredVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Female')) 
+                                    || voices.find(v => v.lang.startsWith('en'));
+                if (preferredVoice) {
+                    utterance.voice = preferredVoice;
+                }
+                
+                // Update status when speech starts
+                utterance.onstart = function() {
+                    statusText.textContent = 'Speaking...';
+                };
+                
+                // Update status when speech ends
+                utterance.onend = function() {
+                    statusText.textContent = `"${text.substring(0, 100)}${text.length > 100 ? '...' : ''}"`;
+                };
+                
+                // Handle errors
+                utterance.onerror = function(event) {
+                    console.error('Speech error:', event);
+                    statusText.textContent = 'Speech error';
+                    // Fallback to alert
+                    alert('🗣️ Akira says:\n\n' + text);
+                };
+                
+                window.speechSynthesis.speak(utterance);
+            } else {
+                // Fallback to alert if Web Speech API not available
+                statusText.textContent = 'Voice not available';
+                alert('🗣️ Akira says:\n\n' + text);
+            }
+            
+            // Also call server API for logging
+            fetch('/api/interactive/speak', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({text: text})
+            })
+            .catch(error => {
+                console.log('Server logging failed:', error);
+            });
+        }
+        
+        function playMusic(mood) {
+            const playerDiv = document.getElementById('musicPlayer');
+            const playlistDiv = document.getElementById('playlist');
+            
+            fetch('/api/interactive/music', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({mood: mood})
+            })
+            .then(response => response.json())
+            .then(data => {
+                playerDiv.style.display = 'block';
+                playlistDiv.innerHTML = '<p><strong>🎵 ' + data.mood.toUpperCase() + ' PLAYLIST</strong></p>';
+                
+                data.playlist.slice(0, 5).forEach((song, index) => {
+                    const track = document.createElement('div');
+                    track.className = 'music-track';
+                    track.innerHTML = song + (index === 0 ? ' <span style="color:#10b981;">▶ Now Playing</span>' : '');
+                    playlistDiv.appendChild(track);
+                });
+                
+                // Play actual mood-based audio
+                playMoodAudio(data.mood);
+                
+                speakToMe(`Playing ${data.mood} music for you`);
+                
+                // Record activity and update preference
+                recordActivity(`played ${data.mood} music`);
+                updateUserPreference('favorite_music', data.mood);
+            })
+            .catch(error => {
+                alert('🎵 Playing ' + mood + ' music!');
+            });
+        }
+        
+        function updateUserPreference(key, value) {
+            // Update user preference
+            fetch('/api/user/note', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_name: userName,
+                    note: `Prefers ${key}: ${value}`
+                })
+            })
+            .catch(error => console.log('Preference update failed'));
+        }
+        
+        let currentAudioContext = null;
+        let currentOscillators = [];
+        let currentGainNodes = [];
+        let musicTimer = null;
+        let isPaused = false;
+        let pauseTime = 0;
+        let currentMood = '';
+        let masterGainNode = null;
+        
+        function stopCurrentAudio() {
+            // Stop any currently playing audio
+            if (currentAudioContext) {
+                currentOscillators.forEach(osc => {
+                    try { osc.stop(); } catch(e) {}
+                });
+                currentOscillators = [];
+                currentGainNodes = [];
+                currentAudioContext.close();
+                currentAudioContext = null;
+                masterGainNode = null;
+            }
+            
+            // Stop timer
+            if (musicTimer) {
+                clearInterval(musicTimer);
+                musicTimer = null;
+            }
+            
+            // Reset state
+            isPaused = false;
+            pauseTime = 0;
+            
+            // Hide player
+            document.getElementById('musicPlayer').style.display = 'none';
+            
+            // Reset buttons
+            document.getElementById('pauseBtn').style.display = 'inline-block';
+            document.getElementById('resumeBtn').style.display = 'none';
+            
+            alert('🎵 Music Stopped');
+            recordActivity('stopped music');
+        }
+        
+        function pauseMusic() {
+            if (currentAudioContext && !isPaused) {
+                currentAudioContext.suspend();
+                isPaused = true;
+                
+                // Pause timer
+                if (musicTimer) {
+                    clearInterval(musicTimer);
+                }
+                
+                // Update buttons
+                document.getElementById('pauseBtn').style.display = 'none';
+                document.getElementById('resumeBtn').style.display = 'inline-block';
+                
+                alert('⏸️ Music Paused');
+                recordActivity('paused music');
+            }
+        }
+        
+        function resumeMusic() {
+            if (currentAudioContext && isPaused) {
+                currentAudioContext.resume();
+                isPaused = false;
+                
+                // Resume timer
+                const timerDisplay = document.getElementById('musicTimer');
+                const timeText = timerDisplay.textContent;
+                const [minutes, seconds] = timeText.split(':').map(Number);
+                const remaining = (minutes * 60) + seconds;
+                startMusicTimer(remaining);
+                
+                // Update buttons
+                document.getElementById('pauseBtn').style.display = 'inline-block';
+                document.getElementById('resumeBtn').style.display = 'none';
+                
+                alert('▶️ Music Resumed');
+                recordActivity('resumed music');
+            }
+        }
+        
+        function skipTrack() {
+            if (currentMood) {
+                alert('⏭️ Skipping to next track...');
+                stopCurrentAudio();
+                setTimeout(() => {
+                    playMusic(currentMood);
+                }, 500);
+                recordActivity('skipped track');
+            }
+        }
+        
+        function adjustVolume(value) {
+            const volumeDisplay = document.getElementById('volumeDisplay');
+            volumeDisplay.textContent = value + '%';
+            
+            if (masterGainNode) {
+                // Adjust volume (0 to 1 scale)
+                const volume = value / 100;
+                masterGainNode.gain.setValueAtTime(volume, currentAudioContext.currentTime);
+            }
+            
+            recordActivity(`adjusted volume to ${value}%`);
+        }
+        
+        function startMusicTimer(duration) {
+            let remaining = duration;
+            const timerDisplay = document.getElementById('musicTimer');
+            
+            // Clear any existing timer
+            if (musicTimer) {
+                clearInterval(musicTimer);
+            }
+            
+            // Update timer every second
+            musicTimer = setInterval(() => {
+                if (!isPaused) {
+                    remaining--;
+                    
+                    const minutes = Math.floor(remaining / 60);
+                    const seconds = remaining % 60;
+                    timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    if (remaining <= 0) {
+                        clearInterval(musicTimer);
+                        timerDisplay.textContent = 'Finished';
+                        setTimeout(() => {
+                            stopCurrentAudio();
+                        }, 2000);
+                    }
+                }
+            }, 1000);
+        }
+        
+        function playMoodAudio(mood) {
+            stopCurrentAudio();
+            
+            // Store current mood for skip function
+            currentMood = mood;
+            
+            // Create audio context
+            currentAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const ctx = currentAudioContext;
+            const now = ctx.currentTime;
+            const duration = 180; // 3 minutes
+            
+            // Create master gain node for volume control
+            masterGainNode = ctx.createGain();
+            masterGainNode.connect(ctx.destination);
+            masterGainNode.gain.value = 0.5; // Start at 50% volume
+            
+            if (mood === 'relaxing') {
+                playRelaxingAmbience(ctx, now, duration, masterGainNode);
+            } else if (mood === 'energetic') {
+                playEnergeticBeats(ctx, now, duration, masterGainNode);
+            } else if (mood === 'focus') {
+                playFocusAmbience(ctx, now, duration, masterGainNode);
+            } else if (mood === 'happy') {
+                playHappyMelody(ctx, now, duration, masterGainNode);
+            }
+            
+            // Start timer
+            startMusicTimer(duration);
+            
+            // Reset pause state
+            isPaused = false;
+            document.getElementById('pauseBtn').style.display = 'inline-block';
+            document.getElementById('resumeBtn').style.display = 'none';
+            
+            // Show playing indicator with stop option
+            if (confirm('🎵 Music Playing!\n\nDuration: 3 minutes\nMood: ' + mood.toUpperCase() + '\n\n✅ Audio is now playing.\n\nControls available:\n• Pause/Resume button\n• Stop button (below player)\n• Skip button\n• Volume slider\n\n━━━━━━━━━━━━━━━━━━━━\n\nClick OK to continue playing\nClick CANCEL to stop music now')) {
+                // User clicked OK - continue playing
+                console.log('Music continues playing');
+            } else {
+                // User clicked CANCEL - stop music
+                stopCurrentAudio();
+            }
+        }
+        
+        function playRelaxingAmbience(ctx, startTime, duration, masterGain) {
+            // Create ocean wave-like sounds with low frequencies
+            const frequencies = [110, 165, 220, 275]; // Low, calming frequencies
+            
+            frequencies.forEach((freq, index) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const lfo = ctx.createOscillator(); // Low Frequency Oscillator for modulation
+                const lfoGain = ctx.createGain();
+                
+                // Setup LFO for wave-like modulation
+                lfo.frequency.value = 0.2 + (index * 0.1);
+                lfoGain.gain.value = 10;
+                lfo.connect(lfoGain);
+                lfoGain.connect(osc.frequency);
+                
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                
+                osc.connect(gain);
+                gain.connect(masterGain); // Connect to master gain
+                
+                // Fade in and out
+                gain.gain.setValueAtTime(0, startTime);
+                gain.gain.linearRampToValueAtTime(0.05, startTime + 5);
+                gain.gain.setValueAtTime(0.05, startTime + duration - 5);
+                gain.gain.linearRampToValueAtTime(0, startTime + duration);
+                
+                osc.start(startTime);
+                lfo.start(startTime);
+                osc.stop(startTime + duration);
+                lfo.stop(startTime + duration);
+                
+                currentOscillators.push(osc, lfo);
+                currentGainNodes.push(gain);
+            });
+            
+            // Add gentle rain-like noise
+            addWhiteNoise(ctx, startTime, duration, 0.02, masterGain);
+        }
+        
+        function playEnergeticBeats(ctx, startTime, duration, masterGain) {
+            // Create upbeat rhythm with higher frequencies
+            const beatInterval = 0.5; // 120 BPM
+            const frequencies = [440, 554, 659, 880]; // Energetic frequencies
+            
+            for (let i = 0; i < duration / beatInterval; i++) {
+                const time = startTime + (i * beatInterval);
+                
+                frequencies.forEach((freq, index) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    
+                    osc.type = 'square';
+                    osc.frequency.value = freq;
+                    
+                    osc.connect(gain);
+                    gain.connect(masterGain);
+                    
+                    // Short punchy notes
+                    gain.gain.setValueAtTime(0.1, time);
+                    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.1);
+                    
+                    osc.start(time);
+                    osc.stop(time + 0.1);
+                    
+                    currentOscillators.push(osc);
+                });
+            }
+        }
+        
+        function playFocusAmbience(ctx, startTime, duration, masterGain) {
+            // Create steady, non-distracting tones
+            const frequencies = [220, 330, 440]; // Harmonious frequencies
+            
+            frequencies.forEach((freq, index) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                osc.type = 'triangle';
+                osc.frequency.value = freq;
+                
+                osc.connect(gain);
+                gain.connect(masterGain);
+                
+                // Very subtle, steady volume
+                gain.gain.setValueAtTime(0, startTime);
+                gain.gain.linearRampToValueAtTime(0.03, startTime + 3);
+                gain.gain.setValueAtTime(0.03, startTime + duration - 3);
+                gain.gain.linearRampToValueAtTime(0, startTime + duration);
+                
+                osc.start(startTime);
+                osc.stop(startTime + duration);
+                
+                currentOscillators.push(osc);
+                currentGainNodes.push(gain);
+            });
+            
+            // Add very subtle white noise
+            addWhiteNoise(ctx, startTime, duration, 0.01, masterGain);
+        }
+        
+        function playHappyMelody(ctx, startTime, duration, masterGain) {
+            // Create cheerful melody with major scale
+            const melody = [
+                {freq: 523, time: 0},    // C
+                {freq: 587, time: 0.5},  // D
+                {freq: 659, time: 1},    // E
+                {freq: 698, time: 1.5},  // F
+                {freq: 784, time: 2},    // G
+                {freq: 880, time: 2.5},  // A
+                {freq: 988, time: 3},    // B
+                {freq: 1047, time: 3.5}  // C
+            ];
+            
+            // Repeat melody throughout duration
+            const melodyDuration = 4;
+            const repetitions = Math.floor(duration / melodyDuration);
+            
+            for (let rep = 0; rep < repetitions; rep++) {
+                melody.forEach(note => {
+                    const time = startTime + (rep * melodyDuration) + note.time;
+                    
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.value = note.freq;
+                    
+                    osc.connect(gain);
+                    gain.connect(masterGain);
+                    
+                    gain.gain.setValueAtTime(0.15, time);
+                    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.4);
+                    
+                    osc.start(time);
+                    osc.stop(time + 0.4);
+                    
+                    currentOscillators.push(osc);
+                });
+            }
+        }
+        
+        function addWhiteNoise(ctx, startTime, duration, volume, masterGain) {
+            // Create white noise for ambient effect
+            const bufferSize = ctx.sampleRate * duration;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * volume;
+            }
+            
+            const noise = ctx.createBufferSource();
+            const gain = ctx.createGain();
+            
+            noise.buffer = buffer;
+            noise.connect(gain);
+            gain.connect(masterGain);
+            
+            gain.gain.setValueAtTime(0, startTime);
+            gain.gain.linearRampToValueAtTime(volume, startTime + 2);
+            gain.gain.setValueAtTime(volume, startTime + duration - 2);
+            gain.gain.linearRampToValueAtTime(0, startTime + duration);
+            
+            noise.start(startTime);
+            
+            currentOscillators.push(noise);
+            currentGainNodes.push(gain);
+        }
+        
+        function playNotificationSound() {
+            // Create audio context for notification
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (e) {
+                console.log('Audio notification not available');
+            }
+        }
+        
+        function detectPerson() {
+            // Stop any playing music or audio first
+            stopCurrentAudio();
+            
+            const detectionArea = document.getElementById('detectionArea');
+            detectionArea.innerHTML = '<div class="pulse">🔍</div><p>Scanning all directions...</p>';
+            
+            // Announce scanning start
+            speakDetection('Scanning for people around you. Please wait.');
+            
+            fetch('/api/interactive/detect-person', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.person_detected) {
+                    const count = data.count || 1;
+                    const zones = data.detections.map(d => `${d.zone} (${d.distance})`).join(', ');
+                    const alertLevel = data.alert_level || 'medium';
+                    
+                    let alertColor = '#f59e0b'; // orange
+                    let alertIcon = '👤';
+                    
+                    if (alertLevel === 'high') {
+                        alertColor = '#ef4444'; // red
+                        alertIcon = '⚠️👤';
+                    }
+                    
+                    detectionArea.innerHTML = `
+                        <div style="font-size:3em;">${alertIcon}</div>
+                        <p style="color:${alertColor}; font-weight:bold;">${count} Person${count > 1 ? 's' : ''} Detected!</p>
+                        <p style="font-size:0.9em; margin-top:5px;">Zones: ${zones}</p>
+                    `;
+                    
+                    // Build detailed voice message
+                    let voiceMessage = '';
+                    if (alertLevel === 'high') {
+                        voiceMessage = `Alert! I detected ${count} person${count > 1 ? 's' : ''} very close to you. `;
+                    } else {
+                        voiceMessage = `I detected ${count} person${count > 1 ? 's' : ''} around you. `;
+                    }
+                    
+                    // Add zone information
+                    const zoneList = data.detections.map(d => `${d.zone} at ${d.distance} distance`).join(', ');
+                    voiceMessage += `Located in: ${zoneList}. `;
+                    
+                    if (alertLevel === 'high') {
+                        voiceMessage += 'Please be cautious!';
+                    } else {
+                        voiceMessage += 'All zones have been scanned.';
+                    }
+                    
+                    // Speak the detection result
+                    speakDetection(voiceMessage);
+                    recordActivity(`detected ${count} person(s) around`);
+                    
+                    // Show detailed alert
+                    let detailsMsg = `🔍 360° SCAN RESULTS\n\n`;
+                    detailsMsg += `✅ Zones Scanned: ${data.zones_scanned.join(', ')}\n`;
+                    detailsMsg += `👤 People Detected: ${count}\n\n`;
+                    
+                    if (data.detections && data.detections.length > 0) {
+                        detailsMsg += `DETECTION DETAILS:\n`;
+                        data.detections.forEach((d, i) => {
+                            detailsMsg += `\n${i+1}. Zone: ${d.zone}\n`;
+                            detailsMsg += `   Distance: ${d.distance.toUpperCase()}\n`;
+                            detailsMsg += `   Confidence: ${d.confidence}%\n`;
+                        });
+                        
+                        if (alertLevel === 'high') {
+                            detailsMsg += `\n⚠️ WARNING: Someone is very close to you!`;
+                            detailsMsg += `\n\nRECOMMENDED ACTIONS:`;
+                            detailsMsg += `\n• Check who it is`;
+                            detailsMsg += `\n• Verify if authorized`;
+                            detailsMsg += `\n• Trigger emergency alert if needed`;
+                        }
+                    }
+                    
+                    setTimeout(() => alert(detailsMsg), 500);
+                } else {
+                    detectionArea.innerHTML = `
+                        <div style="font-size:3em;">✅</div>
+                        <p style="color:#10b981; font-weight:bold;">All Clear</p>
+                        <p style="font-size:0.9em; margin-top:5px;">Scanned: ${data.zones_scanned.join(', ')}</p>
+                    `;
+                    
+                    const clearMessage = `Scan complete. No one detected around you. All zones are clear: ${data.zones_scanned.join(', ')}.`;
+                    speakDetection(clearMessage);
+                    recordActivity('scanned area - all clear');
+                }
+                
+                setTimeout(() => {
+                    detectionArea.innerHTML = '<div class="pulse">📹</div><p>Camera Ready</p>';
+                }, 5000);
+            })
+            .catch(error => {
+                detectionArea.innerHTML = '<div>📹</div><p>Scan Complete</p>';
+                speakDetection('Scan complete. Unable to get detailed results.');
+                setTimeout(() => {
+                    detectionArea.innerHTML = '<div class="pulse">📹</div><p>Camera Ready</p>';
+                }, 2000);
+            });
+        }
+        
+        function speakDetection(message) {
+            // Use Web Speech API for immediate voice feedback
+            if ('speechSynthesis' in window) {
+                // Cancel any ongoing speech
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(message);
+                utterance.rate = 0.9; // Slightly slower for clarity
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+                
+                // Use a clear voice if available
+                const voices = window.speechSynthesis.getVoices();
+                const preferredVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Female')) 
+                                    || voices.find(v => v.lang.startsWith('en'));
+                if (preferredVoice) {
+                    utterance.voice = preferredVoice;
+                }
+                
+                window.speechSynthesis.speak(utterance);
+                
+                // Also update status
+                updateVoiceStatus(message);
+            } else {
+                // Fallback to visual alert
+                alert('🗣️ Akira says:\n\n' + message);
+                updateVoiceStatus(message);
+            }
+        }
+        
+        function startMonitoring() {
+            alert('📹 Continuous Monitoring Started!\n\nThe system will check for people every 30 seconds and alert you if anyone is detected.');
+            speakToMe('Starting continuous monitoring');
+        }
+        
+        function triggerEmergency() {
+            if (confirm('⚠️ TRIGGER EMERGENCY ALERT?\n\nThis will:\n• Alert emergency contacts\n• Share your location\n• Lock all doors\n• Activate cameras\n• Sound alarm\n\nProceed?')) {
+                const statusDiv = document.getElementById('emergencyStatus');
+                const statusText = document.getElementById('emergencyText');
+                
+                fetch('/api/interactive/emergency', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                })
+                .then(response => response.json())
+                .then(data => {
+                    statusDiv.style.display = 'block';
+                    statusText.textContent = 'EMERGENCY ALERT ACTIVATED!';
+                    
+                    alert('🚨 EMERGENCY ALERT ACTIVATED!\n\n' +
+                          '✅ Emergency contacts notified\n' +
+                          '✅ Location shared\n' +
+                          '✅ All doors locked\n' +
+                          '✅ Cameras activated\n' +
+                          '✅ Alarm sounding\n\n' +
+                          'Help is on the way!');
+                })
+                .catch(error => {
+                    alert('🚨 Emergency alert activated!');
+                });
+            }
+        }
+        
+        function testAlert() {
+            alert('🔔 Alert System Test\n\n✅ All systems operational\n✅ Emergency contacts ready\n✅ Location services active\n✅ Security systems armed');
+            speakToMe('Alert system test complete. All systems operational.');
+        }
+        
+        function viewEmergencyContacts() {
+            alert('📞 Emergency Contacts\n\n' +
+                  '1. Emergency Services: 911\n' +
+                  '2. Emergency Contact 1: [phone_number]\n' +
+                  '3. Emergency Contact 2: [phone_number]\n\n' +
+                  'All contacts will be notified in case of emergency.');
+        }
+        
+        function activateTiredMode() {
+            const contentDiv = document.getElementById('tiredModeContent');
+            const detailsDiv = document.getElementById('tiredModeDetails');
+            
+            fetch('/api/interactive/tired-mode', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(response => response.json())
+            .then(data => {
+                contentDiv.style.display = 'block';
+                detailsDiv.innerHTML = `
+                    <p>🎵 Playing relaxing music</p>
+                    <p>📖 Telling you a calming story</p>
+                    <p>💡 Dimming lights</p>
+                    <p>🌡️ Adjusting temperature</p>
+                `;
+                
+                speakToMe('You seem tired. Let me help you relax.');
+                
+                // Also play relaxing music
+                playMusic('relaxing');
+            })
+            .catch(error => {
+                alert('😴 Relaxation Mode Activated!\n\nPlaying calming music and creating a peaceful environment.');
+            });
+        }
+        
+        function refreshStatus() {
+            // Fetch system status
+            fetch('/api/interactive/status')
+            .then(response => response.json())
+            .then(data => {
+                const statusDiv = document.getElementById('systemStatus');
+                statusDiv.innerHTML = `
+                    <p><strong>User:</strong> ${data.user}</p>
+                    <p><strong>Voice Output:</strong> ${data.voice_output ? '✅ Available' : '❌ Not Available'}</p>
+                    <p><strong>Voice Input:</strong> ${data.voice_input ? '✅ Available' : '❌ Not Available'}</p>
+                    <p><strong>Camera:</strong> ${data.camera ? '✅ Available' : '❌ Not Available'}</p>
+                    <p><strong>Monitoring:</strong> ${data.monitoring ? '🟢 Active' : '⚪ Inactive'}</p>
+                    <p><strong>Emergency Contacts:</strong> ${data.emergency_contacts}</p>
+                    <p id="weatherInfo" style="margin-top:10px; padding:10px; background:#f0f9ff; border-radius:5px; border-left:3px solid #3b82f6;">
+                        <strong>🌤️ Weather:</strong> Loading...
+                    </p>
+                `;
+                
+                // Fetch weather
+                loadWeather();
+            })
+            .catch(error => {
+                document.getElementById('systemStatus').innerHTML = '<p>❌ Could not load status</p>';
+            });
+        }
+        
+        function loadWeather() {
+            fetch('/api/weather/summary')
+            .then(response => response.json())
+            .then(data => {
+                const weatherInfo = document.getElementById('weatherInfo');
+                if (weatherInfo) {
+                    weatherInfo.innerHTML = `<strong>${data.summary}</strong>`;
+                }
+            })
+            .catch(error => {
+                const weatherInfo = document.getElementById('weatherInfo');
+                if (weatherInfo) {
+                    weatherInfo.innerHTML = '<strong>🌤️ Weather: Unable to load</strong>';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

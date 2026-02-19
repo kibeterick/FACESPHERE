@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AKIRA AI System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #667eea;
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+            font-size: 1.2em;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .card-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .card p {
+            color: #666;
+            line-height: 1.6;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #10b981;
+            color: white;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AKIRA AI System</h1>
+            <p>Your Complete AI Companion</p>
+            <span class="status-badge">● SYSTEM ONLINE</span>
+        </div>
+        
+        <div class="grid">
+            <a href="/dashboard">
+                <div class="card">
+                    <div class="card-icon">📊</div>
+                    <h2>Dashboard</h2>
+                    <p>Real-time system monitoring, metrics, and analytics</p>
+                </div>
+            </a>
+            
+            <a href="/assistant">
+                <div class="card">
+                    <div class="card-icon">🤖</div>
+                    <h2>Virtual Assistant</h2>
+                    <p>AI-powered task automation and natural language processing</p>
+                </div>
+            </a>
+            
+            <a href="/interactive">
+                <div class="card">
+                    <div class="card-icon">🎙️</div>
+                    <h2>Interactive Assistant</h2>
+                    <p>Voice conversation, music, person detection & emergency alerts</p>
+                </div>
+            </a>
+            
+            <a href="/iot">
+                <div class="card">
+                    <div class="card-icon">🏠</div>
+                    <h2>IoT Control</h2>
+                    <p>Smart home device control and automation</p>
+                </div>
+            </a>
+            
+            <a href="/surveillance">
+                <div class="card">
+                    <div class="card-icon">🎥</div>
+                    <h2>Surveillance</h2>
+                    <p>AI-powered security monitoring and alerts</p>
+                </div>
+            </a>
+            
+            <a href="/marketing">
+                <div class="card">
+                    <div class="card-icon">📈</div>
+                    <h2>Marketing</h2>
+                    <p>Personalized campaigns and customer insights</p>
+                </div>
+            </a>
+            
+            <div class="card" onclick="window.location.href='/notifications'" style="cursor: pointer;">
+                <div class="card-icon">🔔</div>
+                <h2>Notifications</h2>
+                <p>Multi-channel alerts and messaging system</p>
+            </div>
+            
+            <a href="/calendar">
+                <div class="card">
+                    <div class="card-icon">📅</div>
+                    <h2>Calendar & Scheduling</h2>
+                    <p>Meeting scheduler, appointments, reminders & events</p>
+                </div>
+            </a>
+            
+            <a href="/email">
+                <div class="card">
+                    <div class="card-icon">📧</div>
+                    <h2>Email Management</h2>
+                    <p>Send/receive emails, inbox management & templates</p>
+                </div>
+            </a>
+            
+            <a href="/video-calls">
+                <div class="card">
+                    <div class="card-icon">📹</div>
+                    <h2>Video Calls</h2>
+                    <p>Video conferencing, screen sharing, recording & chat</p>
+                </div>
+            </a>
+            
+            <a href="/payments">
+                <div class="card">
+                    <div class="card-icon">💳</div>
+                    <h2>Payment Processing</h2>
+                    <p>Accept payments, invoicing, transactions & reports</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,34 @@
+# Core AI and ML dependencies
+numpy>=1.24.0  # Numerical computing
+scikit-learn>=1.3.0  # Machine Learning
+nltk>=3.8.0  # Natural Language Processing
+
+# AI API Integration
+google-generativeai>=0.3.0  # Google Gemini AI
+python-dotenv>=1.0.0  # Environment variables
+openai>=1.0.0  # OpenAI GPT (optional)
+
+# Voice conversation dependencies
+pyttsx3>=2.90  # Text-to-speech
+SpeechRecognition>=3.10.0  # Speech recognition
+pyaudio>=0.2.13  # Audio input/output
+
+# Computer Vision and Face recognition dependencies
+opencv-python>=4.8.0  # Computer vision
+face_recognition>=1.3.0  # Face recognition
+dlib>=19.24.0  # Required by face_recognition
+
+# Web framework and API dependencies
+flask>=2.3.0  # Web framework
+flask-cors>=4.0.0  # CORS support
+requests>=2.31.0  # HTTP requests
+
+# Optional advanced features:
+# tensorflow>=2.13.0  # Deep learning
+# torch>=2.0.0  # PyTorch for advanced ML
+# spacy>=3.6.0  # Advanced NLP
+# twilio>=8.5.0  # SMS notifications
+# pygame>=2.5.0  # Audio playback
+# playsound>=1.3.0  # Simple audio
+# vosk>=0.3.45  # Offline speech recognition
+# paho-mqtt>=1.6.1  # IoT MQTT protocol

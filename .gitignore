@@ -1,0 +1,83 @@
+# AKIRA AI System - Git Ignore File
+# Prevents sensitive data from being pushed to GitHub
+
+# Environment Variables (IMPORTANT - Contains API Keys!)
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv
+
+# Database Files
+*.db
+*.sqlite
+*.sqlite3
+akira_data.db
+
+# Data Files (may contain user data)
+calendar_data.json
+video_calls_data.json
+payments_data.json
+user_profiles.json
+*.json
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary Files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Recordings and Media
+recordings/
+*.mp4
+*.avi
+*.mov
+
+# Backup Files
+*.bak
+*.backup
+
+# Keep example files
+!.env.example
+!requirements.txt
+!package.json

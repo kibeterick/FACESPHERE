@@ -1,0 +1,73 @@
+╔══════════════════════════════════════════════════════════════╗
+║          📧 GMAIL INTEGRATION - QUICK SETUP                  ║
+╚══════════════════════════════════════════════════════════════╝
+
+🎯 GOAL: Send real emails through Gmail from AKIRA
+
+📋 STEPS:
+
+1️⃣  ENABLE 2-STEP VERIFICATION
+   → Go to: https://myaccount.google.com/security
+   → Click "2-Step Verification"
+   → Follow prompts to enable
+
+2️⃣  GENERATE APP PASSWORD
+   → Go to: https://myaccount.google.com/apppasswords
+   → Select: Mail + Other (Custom name)
+   → Name it: "AKIRA AI System"
+   → Click "Generate"
+   → COPY the 16-character password (e.g., abcd efgh ijkl mnop)
+
+3️⃣  CONFIGURE AKIRA
+   → Open .env file in AKIRA folder
+   → Add these lines:
+
+   EMAIL_ADDRESS=your.email@gmail.com
+   EMAIL_PASSWORD=abcdefghijklmnop
+   SMTP_SERVER=smtp.gmail.com
+   SMTP_PORT=587
+
+   → Replace with YOUR email and App Password (no spaces!)
+
+4️⃣  TEST IT
+   → Start AKIRA: python flask_app.py
+   → Go to: http://localhost:5000/email
+   → Send email to yourself
+   → Check your Gmail inbox!
+
+✅ SUCCESS INDICATORS:
+   • Console shows: "✅ Email sent successfully"
+   • Email appears in Gmail Sent folder
+   • Recipient receives the email
+
+❌ TROUBLESHOOTING:
+   • Authentication Error → Check App Password is correct
+   • Connection Error → Check internet connection
+   • Not in Sent → Wait a few seconds, refresh Gmail
+
+💡 PRO TIPS:
+   • Test with your own email first
+   • Remove spaces from App Password
+   • Keep .env file private
+   • Can revoke App Password anytime
+
+🔗 HELPFUL LINKS:
+   • Full Guide: GMAIL_SETUP_GUIDE.md
+   • App Passwords: https://myaccount.google.com/apppasswords
+   • Security: https://myaccount.google.com/security
+
+📞 NEED HELP?
+   • Read GMAIL_SETUP_GUIDE.md for detailed instructions
+   • Check console for error messages
+   • Verify all credentials are correct
+
+═══════════════════════════════════════════════════════════════
+
+🎉 ONCE CONFIGURED, YOU CAN:
+   ✓ Send emails to anyone
+   ✓ See emails in Gmail Sent folder
+   ✓ Use email templates
+   ✓ Send HTML emails
+   ✓ Integrate with Calendar, Notifications, etc.
+
+═══════════════════════════════════════════════════════════════

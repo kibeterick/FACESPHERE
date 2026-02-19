@@ -1,0 +1,184 @@
+================================================================================
+                    AKIRA AI SYSTEM - QUICK REFERENCE
+================================================================================
+
+🚨 GOT CMAKE ERROR? → Run: install_working.bat (DONE!)
+
+================================================================================
+                              INSTALLATION
+================================================================================
+
+Choose ONE:
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ install_working.bat          [RECOMMENDED]                              │
+│ ✅ Always works              ✅ 2-5 minutes                             │
+│ ✅ 90% functionality         ✅ No CMake needed                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ install_complete.bat         [TRY EVERYTHING]                           │
+│ ⚠️  May fail without CMake   ⚠️  5-30 minutes                           │
+│ ✅ 100% if successful        ⚠️  Falls back gracefully                  │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ diagnose_system.bat          [CHECK STATUS]                             │
+│ 🔍 Shows what's installed    🔍 Recommends solution                     │
+│ 🔍 1 minute check            🔍 No installation                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+
+================================================================================
+                              LAUNCH SYSTEM
+================================================================================
+
+Choose ONE:
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ AKIRA.bat                    [RECOMMENDED]                              │
+│ → Menu-driven interface                                                 │
+│ → Choose web, original, or AI engineering                               │
+│ → Best user experience                                                  │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ python flask_app.py          [WEB INTERFACE]                            │
+│ → Starts web server immediately                                         │
+│ → Open: http://localhost:5000                                           │
+│ → Full browser control                                                  │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ python main.py               [ORIGINAL SYSTEM]                          │
+│ → Command-line interface                                                │
+│ → Basic features                                                        │
+│ → No web required                                                       │
+└─────────────────────────────────────────────────────────────────────────┘
+
+
+================================================================================
+                              DOCUMENTATION
+================================================================================
+
+🎯 START HERE:
+   START_NOW.txt                    → 2-minute quick start
+   DOCUMENTATION_INDEX.md           → Find any guide
+
+🔧 FIX ERRORS:
+   COMPLETE_FIX_GUIDE.md            → Master troubleshooting (12 pages)
+   CMAKE_ERROR_FIXED.md             → CMake error solved!
+   FIX_INSTALLATION.md              → Quick fixes
+
+📚 INSTALLATION:
+   INSTALLATION_SCRIPTS_README.md   → Which script to use
+   CMAKE_INSTALLATION_GUIDE.md      → Enable face recognition
+
+🚀 SYSTEM GUIDES:
+   UNIFIED_SYSTEM_GUIDE.md          → Unified launcher
+   WEB_INTERFACE_GUIDE.md           → Web and API
+   COMPLETE_SETUP_GUIDE.md          → Complete setup
+
+🤖 AI/ML:
+   AI_ENGINEERING_GUIDE.md          → Train ML models
+   AI_ENGINEERING_QUICKREF.md       → Quick reference
+
+📊 FEATURES:
+   FEATURES.md                      → All 160+ features
+   PROJECT_SUMMARY.md               → Project overview
+
+
+================================================================================
+                              COMMON TASKS
+================================================================================
+
+Install packages:
+   install_working.bat              → Recommended
+   install_complete.bat             → Try everything
+
+Check system:
+   diagnose_system.bat              → Full diagnostic
+
+Launch system:
+   AKIRA.bat                        → Unified launcher
+   python flask_app.py              → Web interface
+
+Verify installation:
+   python --version                 → Check Python
+   pip list                         → List packages
+   diagnose_system.bat              → Full check
+
+
+================================================================================
+                              TROUBLESHOOTING
+================================================================================
+
+Problem                          Solution
+─────────────────────────────────────────────────────────────────────────
+CMake error                      → install_working.bat
+Installation fails               → diagnose_system.bat
+Face recognition not working     → Expected! See CMAKE_INSTALLATION_GUIDE.md
+Port 5000 in use                 → Edit flask_app.py, change to 8080
+Module not found                 → install_working.bat again
+System won't start               → diagnose_system.bat
+
+
+================================================================================
+                              QUICK DECISIONS
+================================================================================
+
+"I just want it to work"
+   → install_working.bat → AKIRA.bat → Option 1
+
+"I need face recognition"
+   → CMAKE_INSTALLATION_GUIDE.md (Method 3 - pre-built wheels)
+
+"Something's broken"
+   → diagnose_system.bat → COMPLETE_FIX_GUIDE.md
+
+"I want to learn everything"
+   → DOCUMENTATION_INDEX.md
+
+
+================================================================================
+                              SYSTEM STATUS
+================================================================================
+
+With install_working.bat:
+   ✅ 145+ features (90%)
+   ✅ Web interface
+   ✅ AI assistant
+   ✅ IoT control
+   ✅ Marketing
+   ✅ Voice output
+   ✅ Database
+   ✅ Notifications
+   ✅ AI engineering
+   ❌ Face recognition (optional)
+
+With install_complete.bat (if successful):
+   ✅ 160+ features (100%)
+   ✅ Everything above
+   ✅ Face recognition
+
+
+================================================================================
+                              FASTEST START
+================================================================================
+
+1. install_working.bat           (2-5 minutes)
+2. AKIRA.bat                     (instant)
+3. Choose option 1               (instant)
+4. Open http://localhost:5000    (instant)
+5. Enjoy!                        (forever!)
+
+Total time: 5 minutes
+
+
+================================================================================
+                              API ENDPOINTS
+================================================================================
+
+System:
+   GET  /api/status              → System status
+   GET  /api/dashboard/metrics   → Dashboard metrics

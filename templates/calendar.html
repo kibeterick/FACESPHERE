@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar & Scheduling - AKIRA</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 { color: #667eea; font-size: 2.5em; }
+        .back-btn {
+            padding: 12px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            text-decoration: none;
+        }
+        .back-btn:hover { background: #5568d3; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .stat-card .icon { font-size: 2.5em; margin-bottom: 10px; }
+        .stat-card .value { font-size: 2em; font-weight: bold; color: #667eea; }
+        .stat-card .label { color: #666; margin-top: 5px; }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+        
+        .btn {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-right: 10px;
+        }
+        .btn:hover { background: #5568d3; }
+        .btn-secondary { background: #6c757d; }
+        .btn-secondary:hover { background: #5a6268; }
+        
+        .schedule-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .schedule-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+        .schedule-item .title { font-weight: bold; color: #333; margin-bottom: 5px; }
+        .schedule-item .details { color: #666; font-size: 0.9em; }
+        .schedule-item .time { color: #667eea; font-weight: 500; }
+        
+        .week-view {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+        .day-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .day-card .day-name { font-weight: bold; color: #667eea; margin-bottom: 5px; }
+        .day-card .date { color: #666; font-size: 0.9em; margin-bottom: 10px; }
+        .day-card .count {
+            background: #667eea;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        
+        @media (max-width: 768px) {
+            .main-grid { grid-template-columns: 1fr; }
+            .week-view { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📅 Calendar & Scheduling</h1>
+            <a href="/" class="back-btn">← Back to Home</a>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="icon">📊</div>
+                <div class="value" id="totalMeetings">0</div>
+                <div class="label">Total Meetings</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">📅</div>
+                <div class="value" id="totalAppointments">0</div>
+                <div class="label">Appointments</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">🎉</div>
+                <div class="value" id="totalEvents">0</div>
+                <div class="label">Events</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">⏰</div>
+                <div class="value" id="todayItems">0</div>
+                <div class="label">Today's Items</div>
+            </div>
+        </div>
+        
+        <div class="main-grid">
+            <div class="section">
+                <h2>📝 Schedule Meeting</h2>
+                <div id="meetingMessage" class="message"></div>
+                <form id="meetingForm">
+                    <div class="form-group">
+                        <label>Title *</label>
+                        <input type="text" id="meetingTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date *</label>
+                        <input type="date" id="meetingDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Time *</label>
+                        <input type="time" id="meetingTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Duration (minutes)</label>
+                        <input type="number" id="meetingDuration" value="60">
+                    </div>
+                    <div class="form-group">
+                        <label>Attendees (comma-separated)</label>
+                        <input type="text" id="meetingAttendees" placeholder="John, Sarah, Mike">
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" id="meetingLocation" placeholder="Conference Room A">
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea id="meetingNotes"></textarea>
+                    </div>
+                    <button type="submit" class="btn">Schedule Meeting</button>
+                </form>
+            </div>
+            
+            <div class="section">
+                <h2>📅 Schedule Appointment</h2>
+                <div id="appointmentMessage" class="message"></div>
+                <form id="appointmentForm">
+                    <div class="form-group">
+                        <label>Title *</label>
+                        <input type="text" id="appointmentTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date *</label>
+                        <input type="date" id="appointmentDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Time *</label>
+                        <input type="time" id="appointmentTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Duration (minutes)</label>
+                        <input type="number" id="appointmentDuration" value="60">
+                    </div>
+                    <div class="form-group">
+                        <label>With</label>
+                        <input type="text" id="appointmentWith" placeholder="Dr. Smith">
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" id="appointmentLocation" placeholder="Medical Center">
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea id="appointmentNotes"></textarea>
+                    </div>
+                    <button type="submit" class="btn">Schedule Appointment</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="section" style="margin-top: 20px;">
+            <h2>📆 This Week's Schedule</h2>
+            <div id="weekView" class="week-view"></div>
+        </div>
+        
+        <div class="section" style="margin-top: 20px;">
+            <h2>📋 Today's Schedule</h2>
+            <div id="todaySchedule" class="schedule-list"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Load statistics
+        async function loadStatistics() {
+            try {
+                const response = await fetch('/api/calendar/statistics');
+                const stats = await response.json();
+                
+                document.getElementById('totalMeetings').textContent = stats.total_meetings;
+                document.getElementById('totalAppointments').textContent = stats.total_appointments;
+                document.getElementById('totalEvents').textContent = stats.total_events;
+                document.getElementById('todayItems').textContent = stats.today_items;
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+            }
+        }
+        
+        // Load week view
+        async function loadWeekView() {
+            try {
+                const response = await fetch('/api/calendar/week');
+                const week = await response.json();
+                
+                const weekView = document.getElementById('weekView');
+                weekView.innerHTML = week.map(day => `
+                    <div class="day-card">
+                        <div class="day-name">${day.day_name}</div>
+                        <div class="date">${day.date}</div>
+                        <div class="count">${day.total} items</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading week view:', error);
+            }
+        }
+        
+        // Load today's schedule
+        async function loadTodaySchedule() {
+            try {
+                const response = await fetch('/api/calendar/today');
+                const schedule = await response.json();
+                
+                const todaySchedule = document.getElementById('todaySchedule');
+                
+                if (schedule.total_items === 0) {
+                    todaySchedule.innerHTML = '<p style="text-align: center; color: #666;">No items scheduled for today</p>';
+                    return;
+                }
+                
+                let html = '';
+                
+                schedule.meetings.forEach(meeting => {
+                    html += `
+                        <div class="schedule-item">
+                            <div class="title">📝 ${meeting.title}</div>
+                            <div class="time">${meeting.time} (${meeting.duration} min)</div>
+                            <div class="details">
+                                Attendees: ${meeting.attendees.join(', ')}<br>
+                                Location: ${meeting.location || 'Not specified'}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                schedule.appointments.forEach(appointment => {
+                    html += `
+                        <div class="schedule-item">
+                            <div class="title">📅 ${appointment.title}</div>
+                            <div class="time">${appointment.time} (${appointment.duration} min)</div>
+                            <div class="details">
+                                With: ${appointment.with || 'Not specified'}<br>
+                                Location: ${appointment.location || 'Not specified'}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                schedule.events.forEach(event => {
+                    html += `
+                        <div class="schedule-item">
+                            <div class="title">🎉 ${event.title}</div>
+                            <div class="time">${event.time}</div>
+                            <div class="details">
+                                Location: ${event.location || 'Not specified'}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                todaySchedule.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading today schedule:', error);
+            }
+        }
+        
+        // Schedule meeting
+        document.getElementById('meetingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const attendees = document.getElementById('meetingAttendees').value
+                .split(',').map(a => a.trim()).filter(a => a);
+            
+            const data = {
+                title: document.getElementById('meetingTitle').value,
+                date: document.getElementById('meetingDate').value,
+                time: document.getElementById('meetingTime').value,
+                duration: parseInt(document.getElementById('meetingDuration').value),
+                attendees: attendees,
+                location: document.getElementById('meetingLocation').value,
+                notes: document.getElementById('meetingNotes').value
+            };
+            
+            try {
+                const response = await fetch('/api/calendar/meetings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                const message = document.getElementById('meetingMessage');
+                message.textContent = '✅ Meeting scheduled successfully!';
+                message.className = 'message success';
+                message.style.display = 'block';
+                
+                document.getElementById('meetingForm').reset();
+                loadStatistics();
+                loadTodaySchedule();
+                loadWeekView();
+                
+                setTimeout(() => { message.style.display = 'none'; }, 3000);
+            } catch (error) {
+                const message = document.getElementById('meetingMessage');
+                message.textContent = '❌ Error scheduling meeting';
+                message.className = 'message error';
+                message.style.display = 'block';
+            }
+        });
+        
+        // Schedule appointment
+        document.getElementById('appointmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const data = {
+                title: document.getElementById('appointmentTitle').value,
+                date: document.getElementById('appointmentDate').value,
+                time: document.getElementById('appointmentTime').value,
+                duration: parseInt(document.getElementById('appointmentDuration').value),
+                with_person: document.getElementById('appointmentWith').value,
+                location: document.getElementById('appointmentLocation').value,
+                notes: document.getElementById('appointmentNotes').value
+            };
+            
+            try {
+                const response = await fetch('/api/calendar/appointments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                const message = document.getElementById('appointmentMessage');
+                message.textContent = '✅ Appointment scheduled successfully!';
+                message.className = 'message success';
+                message.style.display = 'block';
+                
+                document.getElementById('appointmentForm').reset();
+                loadStatistics();
+                loadTodaySchedule();
+                loadWeekView();
+                
+                setTimeout(() => { message.style.display = 'none'; }, 3000);
+            } catch (error) {
+                const message = document.getElementById('appointmentMessage');
+                message.textContent = '❌ Error scheduling appointment';
+                message.className = 'message error';
+                message.style.display = 'block';
+            }
+        });
+        
+        // Set default date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('meetingDate').value = today;
+        document.getElementById('appointmentDate').value = today;
+        
+        // Load data on page load
+        loadStatistics();
+        loadWeekView();
+        loadTodaySchedule();
+        
+        // Refresh every 30 seconds
+        setInterval(() => {
+            loadStatistics();
+            loadTodaySchedule();
+        }, 30000);
+    </script>
+</body>
+</html>

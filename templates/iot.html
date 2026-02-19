@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Control - AKIRA</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        .nav {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .nav a {
+            text-decoration: none;
+            color: #667eea;
+            margin-right: 20px;
+            font-weight: 500;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .device-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .device-card.active {
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            border: 2px solid #667eea;
+        }
+        .device-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .device-icon {
+            font-size: 2em;
+            transition: all 0.3s ease;
+        }
+        .device-icon.on {
+            filter: drop-shadow(0 0 10px #fbbf24);
+        }
+        .device-status {
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        .device-status.on {
+            background: #fef3c7;
+            border-left-color: #fbbf24;
+        }
+        .device-status.off {
+            background: #f3f4f6;
+            border-left-color: #9ca3af;
+        }
+        .control-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+        .control-btn:active {
+            transform: translateY(0);
+        }
+        .control-btn.off {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        .control-btn.off:hover {
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }
+        .control-btn.secondary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #e5e7eb;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+        .value-display {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #667eea;
+            color: white;
+            border-radius: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .quick-actions {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .quick-actions h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-indicator.on {
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+        }
+        .status-indicator.off {
+            background: #9ca3af;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .pulsing {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏠 IoT Smart Home Control</h1>
+        <p>Control your smart devices with voice feedback</p>
+    </div>
+    
+    <div class="nav">
+        <a href="/">🏠 Home</a>
+        <a href="/dashboard">📊 Dashboard</a>
+        <a href="/assistant">🤖 Assistant</a>
+        <a href="/iot">🏠 IoT</a>
+        <a href="/interactive">🎙️ Interactive</a>
+    </div>
+    
+    <div class="grid">
+        <!-- Living Room Light -->
+        <div class="device-card" id="card-light_001">
+            <h3>
+                <span class="device-icon" id="icon-light_001">💡</span>
+                Living Room Light
+            </h3>
+            <div class="device-status" id="status-light_001">
+                <span class="status-indicator off" id="indicator-light_001"></span>
+                <strong>Status:</strong> <span id="state-light_001">OFF</span><br>
+                <strong>Brightness:</strong> <span id="brightness-light_001">0%</span>
+            </div>
+            <button class="control-btn" onclick="turnOn('light_001', 'Living Room Light')">💡 Turn On</button>
+            <button class="control-btn off" onclick="turnOff('light_001', 'Living Room Light')">🌙 Turn Off</button>
+            <div class="slider-container">
+                <label>Brightness: <span class="value-display" id="bright-val-light_001">100%</span></label>
+                <input type="range" id="slider-light_001" min="0" max="100" value="100" 
+                       onchange="setBrightness('light_001', this.value)">
+            </div>
+        </div>
+        
+        <!-- Thermostat -->
+        <div class="device-card" id="card-thermo_001">
+            <h3>
+                <span class="device-icon" id="icon-thermo_001">🌡️</span>
+                Main Thermostat
+            </h3>
+            <div class="device-status" id="status-thermo_001">
+                <span class="status-indicator on" id="indicator-thermo_001"></span>
+                <strong>Status:</strong> <span id="state-thermo_001">ACTIVE</span><br>
+                <strong>Temperature:</strong> <span id="temp-thermo_001">72°F</span>
+            </div>
+            <div class="slider-container">
+                <label>Set Temperature: <span class="value-display" id="temp-val-thermo_001">72°F</span></label>
+                <input type="range" id="slider-thermo_001" min="60" max="85" value="72" 
+                       onchange="setTemperature('thermo_001', this.value)">
+            </div>
+        </div>
+        
+        <!-- Door Lock -->
+        <div class="device-card" id="card-lock_001">
+            <h3>
+                <span class="device-icon" id="icon-lock_001">🔒</span>
+                Front Door Lock
+            </h3>
+            <div class="device-status off" id="status-lock_001">
+                <span class="status-indicator off" id="indicator-lock_001"></span>
+                <strong>Status:</strong> <span id="state-lock_001">UNLOCKED</span><br>
+                <strong>Security:</strong> <span id="security-lock_001">Standard</span>
+            </div>
+            <button class="control-btn" onclick="lockDoor('lock_001')">🔒 Lock Door</button>
+            <button class="control-btn off" onclick="unlockDoor('lock_001')">🔓 Unlock Door</button>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <h2>⚡ Quick Actions</h2>
+        <button class="control-btn" onclick="allLightsOn()">💡 All Lights ON</button>
+        <button class="control-btn off" onclick="allLightsOff()">🌙 All Lights OFF</button>
+        <button class="control-btn secondary" onclick="setComfortMode()">🏠 Comfort Mode</button>
+        <button class="control-btn secondary" onclick="setAwayMode()">🚪 Away Mode</button>
+        <button class="control-btn secondary" onclick="setNightMode()">🌙 Night Mode</button>
+        <button class="control-btn secondary" onclick="refreshDevices()">🔄 Refresh Status</button>
+    </div>
+    
+    <script>
+        // Device states
+        let deviceStates = {
+            'light_001': { on: false, brightness: 100 },
+            'thermo_001': { temperature: 72 },
+            'lock_001': { locked: false }
+        };
+        
+        // Voice feedback function
+        function speak(message) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(message);
+                utterance.rate = 0.9;
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+            console.log('🗣️ Akira:', message);
+        }
+        
+        // Turn light ON
+        function turnOn(deviceId, deviceName) {
+            deviceStates[deviceId].on = true;
+            updateLightUI(deviceId, true);
+            speak(`${deviceName} turned on`);
+            
+            // Call API
+            controlDevice(deviceId, 'on', {});
+        }
+        
+        // Turn light OFF
+        function turnOff(deviceId, deviceName) {
+            deviceStates[deviceId].on = false;
+            updateLightUI(deviceId, false);
+            speak(`${deviceName} turned off`);
+            
+            // Call API
+            controlDevice(deviceId, 'off', {});
+        }
+        
+        // Set brightness
+        function setBrightness(deviceId, value) {
+            deviceStates[deviceId].brightness = value;
+            document.getElementById(`bright-val-${deviceId}`).textContent = value + '%';
+            document.getElementById(`brightness-${deviceId}`).textContent = value + '%';
+            
+            if (value > 0 && !deviceStates[deviceId].on) {
+                deviceStates[deviceId].on = true;
+                updateLightUI(deviceId, true);
+            }
+            
+            speak(`Brightness set to ${value} percent`);
+            
+            // Call API
+            controlDevice(deviceId, 'dim', { brightness: value });
+        }
+        
+        // Update light UI
+        function updateLightUI(deviceId, isOn) {
+            const card = document.getElementById(`card-${deviceId}`);
+            const icon = document.getElementById(`icon-${deviceId}`);
+            const status = document.getElementById(`status-${deviceId}`);
+            const indicator = document.getElementById(`indicator-${deviceId}`);
+            const state = document.getElementById(`state-${deviceId}`);
+            
+            if (isOn) {
+                card.classList.add('active');
+                icon.classList.add('on');
+                status.classList.remove('off');
+                status.classList.add('on');
+                indicator.classList.remove('off');
+                indicator.classList.add('on');
+                state.textContent = 'ON';
+                state.style.color = '#10b981';
+            } else {
+                card.classList.remove('active');
+                icon.classList.remove('on');
+                status.classList.remove('on');
+                status.classList.add('off');
+                indicator.classList.remove('on');
+                indicator.classList.add('off');
+                state.textContent = 'OFF';
+                state.style.color = '#9ca3af';
+                document.getElementById(`brightness-${deviceId}`).textContent = '0%';
+            }
+        }
+        
+        // Set temperature
+        function setTemperature(deviceId, value) {
+            deviceStates[deviceId].temperature = value;
+            document.getElementById(`temp-val-${deviceId}`).textContent = value + '°F';
+            document.getElementById(`temp-${deviceId}`).textContent = value + '°F';
+            
+            speak(`Temperature set to ${value} degrees Fahrenheit`);
+            
+            // Call API
+            controlDevice(deviceId, 'set', { temperature: value });
+        }
+        
+        // Lock door
+        function lockDoor(deviceId) {
+            deviceStates[deviceId].locked = true;
+            updateLockUI(deviceId, true);
+            speak('Front door locked. Security enabled.');
+            
+            // Call API
+            controlDevice(deviceId, 'lock', {});
+        }
+        
+        // Unlock door
+        function unlockDoor(deviceId) {
+            if (confirm('🔓 Unlock front door?\n\nThis will disable security on the front entrance.')) {
+                deviceStates[deviceId].locked = false;
+                updateLockUI(deviceId, false);
+                speak('Front door unlocked');
+                
+                // Call API
+                controlDevice(deviceId, 'unlock', {});
+            }
+        }
+        
+        // Update lock UI
+        function updateLockUI(deviceId, isLocked) {
+            const icon = document.getElementById(`icon-${deviceId}`);
+            const status = document.getElementById(`status-${deviceId}`);
+            const indicator = document.getElementById(`indicator-${deviceId}`);
+            const state = document.getElementById(`state-${deviceId}`);
+            const security = document.getElementById(`security-${deviceId}`);
+            
+            if (isLocked) {
+                icon.textContent = '🔒';
+                status.classList.remove('off');
+                status.classList.add('on');
+                indicator.classList.remove('off');
+                indicator.classList.add('on');
+                state.textContent = 'LOCKED';
+                state.style.color = '#10b981';
+                security.textContent = 'Secured';
+            } else {
+                icon.textContent = '🔓';
+                status.classList.remove('on');
+                status.classList.add('off');
+                indicator.classList.remove('on');
+                indicator.classList.add('off');
+                state.textContent = 'UNLOCKED';
+                state.style.color = '#ef4444';
+                security.textContent = 'Unsecured';
+            }
+        }
+        
+        // API call function
+        function controlDevice(deviceId, action, params) {
+            fetch('/api/iot/control', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    device_id: deviceId,
+                    action: action,
+                    params: params
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('✅ Device controlled:', data);
+            })
+            .catch(error => {
+                console.log('⚠️ API call (demo mode):', error);
+            });
+        }
+        
+        // Quick Actions
+        function allLightsOn() {
+            turnOn('light_001', 'All lights');
+            speak('All lights turned on');
+        }
+        
+        function allLightsOff() {
+            turnOff('light_001', 'All lights');
+            speak('All lights turned off');
+        }
+        
+        function setComfortMode() {
+            turnOn('light_001', 'Living Room Light');
+            setTemperature('thermo_001', 72);
+            speak('Comfort mode activated. Temperature set to 72 degrees, lights turned on');
+        }
+        
+        function setAwayMode() {
+            turnOff('light_001', 'All lights');
+            lockDoor('lock_001');
+            setTemperature('thermo_001', 68);
+            speak('Away mode activated. All lights off, doors locked, temperature set to 68 degrees');
+        }
+        
+        function setNightMode() {
+            setBrightness('light_001', 20);
+            setTemperature('thermo_001', 68);
+            lockDoor('lock_001');
+            speak('Night mode activated. Lights dimmed to 20 percent, temperature set to 68 degrees, doors locked');
+        }
+        
+        function refreshDevices() {
+            speak('Refreshing device status');
+            location.reload();
+        }
+    </script>
+</body>
+</html>

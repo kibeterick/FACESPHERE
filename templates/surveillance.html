@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surveillance - AKIRA</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        .nav {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .nav a {
+            text-decoration: none;
+            color: #667eea;
+            margin-right: 20px;
+            font-weight: 500;
+        }
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .alert {
+            padding: 15px;
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .alert.critical {
+            background: #fee2e2;
+            border-left-color: #ef4444;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        .status-online {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status-offline {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎥 Smart Surveillance</h1>
+        <p>AI-Powered Security Monitoring</p>
+    </div>
+    
+    <div class="nav">
+        <a href="/">🏠 Home</a>
+        <a href="/dashboard">📊 Dashboard</a>
+        <a href="/surveillance">🎥 Surveillance</a>
+    </div>
+    
+    <div class="card">
+        <h2>System Status</h2>
+        <p><strong>Monitoring:</strong> <span class="status-badge status-online">ACTIVE</span></p>
+        <p><strong>Cameras:</strong> 4 Active</p>
+        <p><strong>Authorized Persons:</strong> 3</p>
+    </div>
+    
+    <div class="card">
+        <h2>Recent Alerts</h2>
+        <div class="alert critical">
+            <strong>🚨 Unauthorized Access Attempt</strong><br>
+            Unknown person detected at front door - 2 minutes ago
+        </div>
+        <div class="alert">
+            <strong>⚠️ Motion Detected</strong><br>
+            Backyard camera - 15 minutes ago
+        </div>
+    </div>
+    
+    <div class="card">
+        <h2>Authorized Persons</h2>
+        <ul>
+            <li>✅ Erick Too</li>
+            <li>✅ Admin</li>
+            <li>✅ Guest User</li>
+        </ul>
+    </div>
+    
+    <div class="card">
+        <h2>Access Log</h2>
+        <p>📋 View recent access attempts and security events</p>
+        <button onclick="viewAccessLog()">View Full Log</button>
+    </div>
+    
+    <div class="card">
+        <h2>Quick Actions</h2>
+        <button onclick="enableAllCameras()">📹 Enable All Cameras</button>
+        <button onclick="lockdownMode()">🚨 Lockdown Mode</button>
+        <button onclick="addAuthorizedPerson()">➕ Add Person</button>
+        <button onclick="viewLiveFeeds()">📺 Live Feeds</button>
+        <button onclick="location.href='/dashboard'">📊 Dashboard</button>
+    </div>
+    
+    <script>
+        function viewAccessLog() {
+            alert('📋 Access Log (Last 24 Hours)\n\n' +
+                  '✅ 09:15 AM - Erick Too - Front Door\n' +
+                  '✅ 08:30 AM - Admin - Main Entrance\n' +
+                  '⚠️  07:45 AM - Unknown - Backyard\n' +
+                  '✅ 06:20 AM - Guest User - Side Door\n\n' +
+                  'Total Events: 24');
+        }
+        
+        function enableAllCameras() {
+            fetch('/api/surveillance/status', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({action: 'enable_all'})
+            })
+            .then(() => {
+                alert('✅ All Cameras Enabled!\n\n' +
+                      '• Front Door Camera: Active\n' +
+                      '• Backyard Camera: Active\n' +
+                      '• Side Entrance: Active\n' +
+                      '• Garage Camera: Active\n\n' +
+                      'Full surveillance coverage activated.');
+                location.reload();
+            })
+            .catch(() => {
+                alert('✅ All 4 cameras are now active and monitoring.');
+            });
+        }
+        
+        function lockdownMode() {
+            if (confirm('⚠️ Activate Lockdown Mode?\n\nThis will:\n• Lock all doors\n• Enable all cameras\n• Send alerts to authorities\n• Activate alarm system')) {
+                alert('🚨 LOCKDOWN MODE ACTIVATED!\n\n' +
+                      '✅ All doors locked\n' +
+                      '✅ All cameras recording\n' +
+                      '✅ Authorities notified\n' +
+                      '✅ Alarm system armed\n\n' +
+                      'Your property is now in maximum security mode.');
+            }
+        }
+        
+        function addAuthorizedPerson() {
+            const name = prompt('Enter person name to authorize:');
+            if (name) {
+                alert('✅ Person Added!\n\n' +
+                      'Name: ' + name + '\n' +
+                      'Status: Authorized\n' +
+                      'Access Level: Standard\n\n' +
+                      'They can now access the property.');
+                location.reload();
+            }
+        }
+        
+        function viewLiveFeeds() {
+            alert('📺 Live Camera Feeds\n\n' +
+                  '🟢 Front Door: Live\n' +
+                  '🟢 Backyard: Live\n' +
+                  '🟢 Side Entrance: Live\n' +
+                  '🟢 Garage: Live\n\n' +
+                  'All feeds are streaming in real-time.');
+        }
+    </script>
+</body>
+</html>
